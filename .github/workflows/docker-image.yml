@@ -1,4 +1,4 @@
-name: CI
+name: Build and Push Docker Image
 
 on:
   push:
@@ -11,26 +11,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout source
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
         with:
-          node-version: 18
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Install dependencies (frontend)
-        working-directory: frontend
-        run: npm install
+      - name: Build and Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: praga16/mean-backend:latest
 
-      - name: Build Angular app
-        working-directory: frontend
-        run: npm run build --if-present
-
-      - name: Install dependencies (backend)
-        working-directory: backend
-        run: npm install
-
-      - name: Run backend tests
-        working-directory: backend
-        run: npm test
+      - name: Build and Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: praga16/mean-frontend:latest
