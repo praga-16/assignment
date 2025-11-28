@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Tutorial } from '../models/tutorial.model';
 
 // Use full backend API URL
-const baseUrl = 'http://localhost:5000/api/tutorials';
+const baseUrl = '/api/tutorials';
 
 @Injectable({
   providedIn: 'root'
